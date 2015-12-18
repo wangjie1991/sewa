@@ -1,0 +1,30 @@
+# STATEMENT
+# this is the config file of SelWav. The item of config should be add and
+# delete according to the code. The value is adjusted according to the data
+# set to get best result.
+# comments can be add by prefix #.
+
+# main
+wave_list = list/wave.list
+#desc_list = list/desc.list
+
+select_list = list/sel.txt
+select_hour = 6
+
+# wave
+#silent_short_limit = 80
+silent_short_limit = 100
+silent_float_rate = 0.5
+
+loud_short_thres = 26000
+loud_short_num = 8
+
+# eval
+wave_feat_min = [60, 10, 50, 0, 0, 10, 0, 0]
+wave_feat_max = [300, 120, 300, 20, 30, 60, 10, 20]
+
+wave_weight = [15, 15, 0, 20, 0, 30, 20, 0]
+desc_weight = [100, 0, 0, 0, 0]
+dim_weight = [100, 0]
+
+
