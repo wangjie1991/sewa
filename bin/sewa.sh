@@ -47,9 +47,9 @@ then
   exit -1
 fi
 
-if [ ! -d $desc_dir ]
+if [ $# -eq 3 && ! -d $desc_dir ]
 then
-  echo "Message: desc file directory is not exist."
+  echo "Error: desc file directory is not exist."
 fi
 
 if [ $sewa_hour -le 0 ]

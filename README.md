@@ -1,9 +1,6 @@
 This is a program to select better transcript wave files from original wave
 data set.
 
-Usage: ./sewa.sh [OPTION]
-
-
 #### USAGE METHON ONE :
 $ ./sewa.sh wave_dir desc_dir sewa_dir sewa_hour
 
