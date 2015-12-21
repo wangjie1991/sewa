@@ -5,7 +5,7 @@ TARGET = sewa
 OBJ = main.o desc.o eval.o syns.o util.o wave.o 
 
 ifeq ($(VAR), debug)
-CXXFLAGS = -g -O0 -D_DEBUG_ -c -Wall
+CXXFLAGS = -g -O0 -c -Wall
 else
 CXXFLAGS = -O3 -c -Wall
 endif

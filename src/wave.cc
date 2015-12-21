@@ -33,11 +33,11 @@ extern const std::string g_wave_feat_name[kWaveFeatMax] = {
   "noise_rate"
 };
 
-short g_silent_short_limit = 100;
-float g_silent_float_rate = 0.5;    //50%
+short g_silent_limit = 100;
+float g_silent_rate = 0.6;    //60%
 
-short g_loud_short_thres = 26000;   //80%
-short g_loud_short_num = 8;
+short g_loud_thres = 26000;   //80%
+short g_loud_num = 8;
 
 /**************************************************************************
   initialize feats_ and data_
@@ -200,12 +200,12 @@ void Wave::ExtractWaveFeat() {
       }
 
       /* calculate statistial variables by sample point ratio */
-      if ((sample >= -g_silent_short_limit) && 
-          (sample <= g_silent_short_limit)) {
+      if ((sample >= -g_silent_limit) && 
+          (sample <= g_silent_limit)) {
         silent_num++;
       }
-      if ((sample <= -g_loud_short_thres) || 
-          (sample >= g_loud_short_thres)) {
+      if ((sample <= -g_loud_thres) || 
+          (sample >= g_loud_thres)) {
         loud_num++;
       }
 
@@ -213,10 +213,10 @@ void Wave::ExtractWaveFeat() {
     }
 
     /* judge the frame according to statistical variables */
-    if (silent_num > (g_silent_float_rate * sample_num)) {
+    if (silent_num > (g_silent_rate * sample_num)) {
       silent_sec++;
     }
-    if ((int)loud_num > g_loud_short_num) {
+    if ((int)loud_num > g_loud_num) {
       loud_sec++;
     }
     

@@ -22,12 +22,9 @@
 enum WaveFeat {
   kWaveFeatWaveSec,
   kWaveFeatSilentSec,
-  kWaveFeatVocalSec,
   kWaveFeatLoudSec,
-  kWaveFeatNoiseSec,
   kWaveFeatSilentRate,
   kWaveFeatLoudRate,
-  kWaveFeatNoiseRate,
   kWaveFeatMax
 };
 

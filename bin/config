@@ -1,30 +1,41 @@
-# STATEMENT
-# this is the config file of SelWav. The item of config should be add and
+#                           STATEMENT
+# this is the config file of sewa. The item of config should be add and
 # delete according to the code. The value is adjusted according to the data
 # set to get best result.
-# comments can be add by prefix #.
-
-# main
-wave_list = list/wave.list
-#desc_list = list/desc.list
-
-select_list = list/sel.txt
-select_hour = 6
+# comments can be add by prefix # at first of the line.
 
 # wave
-#silent_short_limit = 80
-silent_short_limit = 100
-silent_float_rate = 0.5
-
-loud_short_thres = 26000
-loud_short_num = 8
+# 16bit
+silent_limit = 100
+silent_rate = 0.6
+loud_thres = 26000
+loud_num = 8
 
 # eval
-wave_feat_min = [60, 10, 50, 0, 0, 10, 0, 0]
-wave_feat_max = [300, 120, 300, 20, 30, 60, 10, 20]
+wave_minute_min = 1
+wave_minute_max = 5
+silent_minute_min = 0
+silent_minute_max = 2
+loud_minute_min = 0
+loud_minute_max = 0.5
+silent_rate_min = 0
+silent_rate_max = 0.6
+loud_rate_min = 0
+loud_rate_max = 0.2
 
-wave_weight = [15, 15, 0, 20, 0, 30, 20, 0]
-desc_weight = [100, 0, 0, 0, 0]
-dim_weight = [100, 0]
+weight_wave_minute = 0.15
+weight_silent_minute = 0.15
+weight_loud_minute = 0.2
+weight_silent_rate = 0.3
+weight_loud_rate = 0.2
+
+weight_speaker = 1
+weight_office = 0
+weight_platform = 0
+weight_format = 0
+weight_business = 0
+
+weight_wave = 1
+weight_desc = 0
 
 

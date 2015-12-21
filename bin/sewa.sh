@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # arguments
-wave_dir="wave/"
-desc_dir="desc/"
+wave_dir=""
+desc_dir=""
 sewa_dir="sewa/"
-sewa_hour="1"
+sewa_hour=0
 
 if [ $# -eq 4]
 then
@@ -30,14 +30,15 @@ fi
 # debug version output the analysis result and
 # save the list directory.
 debug=true
-config="config"
+conf="config"
 list_dir="list"
 
 # var only use in this script
 wave_list="$list_dir/wave.list"
 desc_list="$list_dir/desc.list"
 sewa_list="$list_dir/sewa.list"
-sewa_txt="$list_dir/sewa.txt"
+sewa_log="$list_dir/sewa.log"
+sewa_res=-1
 
 
 # check arguments
@@ -47,7 +48,7 @@ then
   exit -1
 fi
 
-if [ $# -eq 3 && ! -d $desc_dir ]
+if [ $# -eq 4 && ! -d $desc_dir ]
 then
   echo "Error: desc file directory is not exist."
 fi
@@ -67,19 +68,21 @@ mkdir $list_dir
 
 # make wave list file
 find $wave_dir -name "*.wav" > $wave_list
-wave_cnt=`cat $wave_list | wc -l`
-if [ $wave_cnt -eq 0 ]
+#wave_cnt=`cat $wave_list | wc -l`
+#if [ $wave_cnt -eq 0 ]
+if [ ! -s $wave_list ]
 then
   echo "Error: NO wave files in wave directory."
   exit -1
 fi
 
 # make desc list file
-if [ -d $desc_dir ]
+if [ $desc_dir != "" ]
 then
   find $desc_dir -name "*.wav" > $desc_list
-  desc_cnt=`cat $desc_list | wc -l`
-  if [ $desc_cnt -eq 0 ]
+  #desc_cnt=`cat $desc_list | wc -l`
+  #if [ $desc_cnt -eq 0 ]
+  if [ ! -s $desc_list ]
   then
     echo "Error: NO desc files in desc directory."
     exit -1
@@ -87,24 +90,32 @@ then
 fi
 
 # run the main program
-if [ $debug ]
+if [ $debug && -s $desc_list ]
 then
-  ./sewa.d -f $config $wave_list $desc_list $sewa_list $sewa_hour -o $sewa_txt 
-else
-  ./sewa.r -f $config $wave_list $desc_list $sewa_list $sewa_hour -o $sewa_txt 
+  sewa_res=`./sewa -f $conf -d $desc_list -l $sewa_log $wave_list $sewa_hour $sewa_list`
+elif [ $debug && ! -s $desc_list ]
+then
+  sewa_res=`./sewa -f $conf -l $sewa_log $wave_list $sewa_hour $sewa_list`
+elif [ ! $debug && -s $desc_list ]
+then
+  sewa_res=`./sewa -f $conf -d $desc_list $wave_list $sewa_hour $sewa_list`
+elif [ ! $debug && ! -s $desc_list ]
+then
+  sewa_res=`./sewa -f $conf $wave_list $sewa_hour $sewa_list`
 fi
-echo "Select wave success"
 
-# cp files in sewa.list to sewa directory
+if [ $sewa_res -eq 0 ]
+then
+  echo "Select wave files success."
+else
+  echo "Select wave files failed."
+  exit -1
+fi
+
+# copy files in sewa.list to sewa directory
 while read line
 do
-  name=${line##*/}
-  name=${name%%.*}
-
-  cnt=`grep -c ^$name$ $sewa_list`
-  if [ $cnt -gt 0 ]
-  then
-    path=${line#*/}
+    name=${line##*/}
     path=${sewa_dir}${path}
 
     dir=${path%/*}
@@ -114,11 +125,10 @@ do
     fi
 
     cp $line $path
-  fi
-done < $wave_list
-echo "Copy wave success"
+done < $sewa_list
+echo "Copy wave files success"
 
-# rm temporary files for debug
+# rm temporary files in debug mode
 if [ ! $debug ]
   rm -rf $list_dir
 fi

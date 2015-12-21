@@ -22,6 +22,7 @@
 #include "desc.h"
 #include "eval.h"
 
+using namespace std;
 
 /**************************************************************************
   This class provides the synthesized function to select files in batch 
@@ -43,14 +44,20 @@ class Syns {
 /**************************************************************************
   Function: Syns
   Description: constructor with file name initialization
-  Input: const std::string &wave_file
-         const std::string &desc_file
+  Input: const string &wave_file
+         const string &desc_file
+         const int    sewa_hour
+         const string &sewa_file
+         const string &sewa_log
   Output: none
   Return: none
   Notice: constructor initializer for variables
 **************************************************************************/
-  explicit Syns(const std::string &wave_file, 
-                const std::string &desc_file);
+  explicit Syns(const string &wave_file,
+                const string &desc_file,
+                const int sewa_hour,
+                const string &sewa_file,
+                const string &sewa_log);
 
 /**************************************************************************
   Function: ~Syns
@@ -74,20 +81,9 @@ class Syns {
   int SynsProc();
 
 /**************************************************************************
-  Function: Select
-  Description: write selected filename to select_file
-  Input: const int select_hour
-  Output: std::string &select_file
-  Return: -1, failed
-           0, success
-  Notice: none
-**************************************************************************/
-  int Select(const int select_hour, std::string &select_file) const;
-
-/**************************************************************************
   variable member function
 **************************************************************************/
-  const std::map<std::string, int> &speaker_rate() const {
+  const map<string, int> &speaker_rate() const {
     return speaker_rate_;
   }
 
@@ -126,6 +122,17 @@ class Syns {
   void GenVectors();
 
 /**************************************************************************
+  Function: Select
+  Description: write selected filename to sewa_file
+  Input: none
+  Output: none
+  Return: -1, failed
+           0, success
+  Notice: none
+**************************************************************************/
+  int Select() const;
+
+/**************************************************************************
   Function: CountDescSpeaker
   Description: count desc according to speaker
   Input: none
@@ -147,22 +154,26 @@ class Syns {
 
   /* The name of the file that lists the full path name of all wave files
      and the vector that stores these full path names */
-  std::string wave_file_;
-  std::vector<std::string> wave_list_;
+  string wave_file_;
+  vector<string> wave_list_;
 
   /* The name of the file that lists the full path name of all desc files
      and the vector that stores these full path names */
-  std::string desc_file_;
-  std::vector<std::string> desc_list_;
+  string desc_file_;
+  vector<string> desc_list_;
+
+  int sewa_hour_;
+  string sewa_file_;
+  string sewa_log_;
 
   /* wave, desc and eval objects in vector */
-  std::vector<Wave> waves_;
-  std::vector<Desc> descs_;
-  std::vector<Eval> evals_;
+  vector<Wave> waves_;
+  vector<Desc> descs_;
+  vector<Eval> evals_;
 
   /* statistical data of desc's speaker feature */
-  std::map<std::string, int> speaker_count_;
-  std::map<std::string, int> speaker_rate_;
+  map<string, int> speaker_count_;
+  map<string, int> speaker_rate_;
 
 };
 
