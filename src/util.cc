@@ -15,15 +15,17 @@
 #include <string>
 #include <iostream>
 
+using namespace std;
 
-extern const std::string g_suffix_wav(".wav");
-extern const std::string g_suffix_des(".des");
+
+extern const string g_suffix_wav(".wav");
+extern const string g_suffix_des(".des");
 
 
 /**************************************************************************
   Compare path last few charactors with suffix in the same length
 **************************************************************************/
-bool IsSuffixLegal(const std::string &path, const std::string &suffix) {
+bool IsSuffixLegal(const string &path, const string &suffix) {
   /* check path and suffix */
   if (path.empty() || suffix.empty()) {
     return false;
@@ -47,26 +49,26 @@ bool IsSuffixLegal(const std::string &path, const std::string &suffix) {
 /**************************************************************************
   Get substr with STL string.
 **************************************************************************/
-int ExtractName(const std::string &path, std::string &name) {
+int ExtractName(const string &path, string &name) {
   /* check path */
   if (path.empty()) {
-    std::cerr << "ExtractName error: path=\"\"." << std::endl;
+    cerr << "util error: path=\"\"." << endl;
     return -1;
   }
 
   /* start pos */
-  std::string::size_type index = 0;
+  size_t index = 0;
 
-  std::string::size_type start_pos = 0;
+  size_t start_pos = 0;
   index = path.find_last_of('/');
-  if (index != std::string::npos) {
+  if (index != string::npos) {
     start_pos = index + 1;
   } 
 
   /* end pos */
-  std::string::size_type end_pos = start_pos;
-  index = path.find_first_of('.', start_pos);
-  if (index != std::string::npos) {
+  size_t end_pos = start_pos;
+  index = path.find_last_of('.');
+  if (index != string::npos) {
     end_pos = index - 1;
   }
 
@@ -74,7 +76,7 @@ int ExtractName(const std::string &path, std::string &name) {
 
   /* check name */
   if (name.empty()) {
-    std::cerr << "ExtractName error: name=\"\"" << std::endl;
+    cerr << "util error: name=\"\"" << endl;
     return -1;
   }
 

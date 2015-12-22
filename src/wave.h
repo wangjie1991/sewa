@@ -16,6 +16,9 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
+
+using namespace std;
 
 
 /* feature types */
@@ -55,7 +58,7 @@ struct WaveData {
   WaveHeader *wave_header;
 };
 
-extern const std::string g_wave_feat_name[];
+extern const string g_wave_feat_name[];
 
 /**************************************************************************
   This class provides the function to extract features from .wav file.
@@ -76,12 +79,12 @@ class Wave {
 /**************************************************************************
   Function: Wave
   Description: constructor with path_ initialization
-  Input: const std::string &path
+  Input: const string &path
   Output: none
   Return: none
   Notice: use constructor initializer
 **************************************************************************/
-  explicit Wave(const std::string &path);
+  explicit Wave(const string &path);
 
 /**************************************************************************
   Function: ~Wave
@@ -107,19 +110,20 @@ class Wave {
 /**************************************************************************
   Function: Print
   Description: print the member value of object
-  Input: none
+  Input: ofstream &ofs
   Output: none
   Return: none
   Notice: none
 **************************************************************************/
-  void Print() const;
+  void Print(ofstream &ofs) const;
 
 /**************************************************************************
 variable member function
 **************************************************************************/
-  //void set_file_path(const std::string &path) { file_path_ = path; }
-  const std::string &name() const { return name_; }
-  const std::vector<int> &feats() const { return feats_; }
+  //void set_file_path(const string &path) { file_path_ = path; }
+  const string &name() const { return name_; }
+  const string &path() const { return path_; }
+  const vector<int> &feats() const { return feats_; }
 
  private:
 /**************************************************************************
@@ -154,16 +158,16 @@ variable member function
   void ExtractWaveFeat();
 
   /* full file name */
-  std::string path_;
+  string path_;
 
   /* file name without prefix and suffix */
-  std::string name_;
+  string name_;
 
   /* buffer and size of wave data */
   WaveData data_;
 
   /* wave features */
-  std::vector<int> feats_;
+  vector<int> feats_;
 
 };
 

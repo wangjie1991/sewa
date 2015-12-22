@@ -16,6 +16,9 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
+
+using namespace std;
 
 
 /* feature type */
@@ -28,7 +31,7 @@ enum DescFeat {
   kDescFeatMax
 };
 
-extern const std::string g_desc_feat_name[];
+extern const string g_desc_feat_name[];
 
 /**************************************************************************
   This class provides the function to get desc feature from desc file.
@@ -51,12 +54,12 @@ class Desc {
 /**************************************************************************
   Function: Desc
   Description: constructor with path_ initialization
-  Input: const std::string &path
+  Input: const string &path
   Output: none
   Return: none
   Notice: constructor initializer for variables
 **************************************************************************/
-  explicit Desc(const std::string &path);
+  explicit Desc(const string &path);
 
 /**************************************************************************
   Function: ~Desc
@@ -82,41 +85,41 @@ class Desc {
 /**************************************************************************
   Function: Print
   Description: print the member value of object
-  Input: none
+  Input: ofstream &ofs
   Output: none
   Return: none
   Notice: none 
 **************************************************************************/
-  void Print() const;
+  void Print(ofstream &ofs) const;
 
 /**************************************************************************
   variable member function
 **************************************************************************/
-  const std::string &name() const { return name_; }
-  const std::vector<std::string> &feats() const { return feats_; }
+  const string &name() const { return name_; }
+  const vector<string> &feats() const { return feats_; }
 
  private:
 
 /**************************************************************************
   Function: ExtractDescFeat
   Description: Extract features from desc data
-  Input:  const std::string &line   current json item
+  Input:  const string &line   current json item
           const int count           current index of json item
   Output: none
   Return: -1, failed
            0, success
   Notice: none 
 **************************************************************************/
-  int ExtractDescFeat(const std::string &line, const int count);
+  int ExtractDescFeat(const string &line, const int count);
 
   /* file full path name */
-  std::string path_;
+  string path_;
 
   /* file name without directory and suffix */
-  std::string name_;
+  string name_;
 
   /* desc features */
-  std::vector<std::string> feats_;
+  vector<string> feats_;
 
 };
 

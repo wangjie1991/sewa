@@ -19,9 +19,11 @@
 
 #include "util.h"
 
+using namespace std;
+
 
 /* feature type name */
-extern const std::string g_desc_feat_name[kDescFeatMax] = {
+extern const string g_desc_feat_name[kDescFeatMax] = {
   "speaker",
   "office",
   "platform",
@@ -37,7 +39,7 @@ Desc::Desc() : feats_(kDescFeatMax) { }
 /**************************************************************************
   If file name is not end with .des, the path is considered invalid.
 **************************************************************************/
-Desc::Desc(const std::string &path)
+Desc::Desc(const string &path)
     : path_(path), feats_(kDescFeatMax) {
   if (!IsSuffixLegal(path_, g_suffix_des)){
     path_ = "";
@@ -50,30 +52,26 @@ Desc::Desc(const std::string &path)
 int Desc::DescProc() {
   /* extract file name */
   if (0 != ExtractName(path_, name_)) {
-    std::cerr << "DescProc error: " << path_ 
-              << " ExtractName failed" << std::endl;
+    cerr << "desc error: " << path_ << " ExtractName failed" << endl;
     return -1;
   }
 
   /* get file stream */
-  std::ifstream stream(path_.c_str());
+  ifstream stream(path_.c_str());
   if (!stream) {
-    std::cerr << "DescProc error: can't open file " 
-              << path_ << std::endl;
+    cerr << "desc error: can't open file " << path_ << endl;
     return -1;
   }
 
   /* get features */
   int count = 0;
-  std::string line;
+  string line;
   while (1) {
-    std::getline(stream, line);
+    getline(stream, line);
     if (stream.eof()) {
       break;
     }
 
-    //std::cout << "DescProc : file " << path_ 
-              //<< " line=" << line << " count=" << count << std::endl;
     if (0 != ExtractDescFeat(line, count)) {
       break;
     }
@@ -83,8 +81,8 @@ int Desc::DescProc() {
   stream.close();
 
   if (count != kDescFeatMax) {
-    std::cerr << "DescProc error: file " << path_
-              << " json item process failed" << std::endl;
+    cerr << "desc error: file " << path_ 
+         << " json item process failed" << endl;
     return -1;
   } else {
     return 0;
@@ -99,31 +97,28 @@ int Desc::DescProc() {
   "format":"f"
   "business":"b"
 **************************************************************************/
-int Desc::ExtractDescFeat(const std::string &line, const int count) {
+int Desc::ExtractDescFeat(const string &line, const int count) {
   /* find pos of split charactor ':' */
-  std::string::size_type pos = line.find_first_of(':');
-  if (pos == std::string::npos) {
-    std::cerr << "ExtractDescFeat error: file " << path_ 
-              << " item " << g_desc_feat_name[count] 
-              << " can't find ':'" << std::endl;
+  size_t pos = line.find_first_of(':');
+  if (pos == string::npos) {
+    cerr << "desc error: file " << path_ << " item " 
+         << g_desc_feat_name[count] << " can't find ':'" << endl;
     return -1;
   }
 
   /* check '"' */
   if ((line[0] != '"') || (line[pos-1] != '"') || 
       (line[pos+1] != '"') || (line[line.length()-1] != '"')) {
-    std::cerr << "ExtractDescFeat error: file " << path_ 
-              << " item " << g_desc_feat_name[count] 
-              << " '\"' is invalid" << std::endl;
+    cerr << "desc error: file " << path_ << " item " 
+         << g_desc_feat_name[count] << " '\"' is invalid" << endl;
     return -1;
   }
 
   /* get key */
-  std::string key = line.substr(1, pos-2);
+  string key = line.substr(1, pos-2);
   if (0 != key.compare(g_desc_feat_name[count])) {
-    std::cerr << "ExtractDescFeat error: file " << path_ 
-              << " item " << g_desc_feat_name[count] 
-              << " key is invalid" << std::endl;
+    cerr << "desc error: file " << path_ << " item " 
+         << g_desc_feat_name[count] << " key is invalid" << endl;
     return -1;
   }
 
@@ -133,23 +128,28 @@ int Desc::ExtractDescFeat(const std::string &line, const int count) {
 }
 
 /**************************************************************************
-  --------
-  path : /home/xxx/file.wav
-  name : file
-  feat-speaker : A
-  feat-office : 1111
-  ....
+  desc-feat
+    speaker: "XX"
+    office: "XX"
+    platform: "XX"
+    format: "XX"
+    business: "XX"
+    path: /home/xxx/file.des
 **************************************************************************/
-void Desc::Print() const {
-  std::cout << "--------" << std::endl
-            << "path : " << path_ << std::endl
-            << "name : " << name_ << std::endl;
-
-  std::vector<std::string>::size_type index;
-  for (index = 0; index != feats_.size(); ++index) {
-    std::cout << "feat-" << g_desc_feat_name[index] << " : "
-              << feats_[index] << std::endl;
+void Desc::Print(ofstream &ofs) const {
+  if (!ofs) {
+    return;
   }
+
+  ofs << "desc-feat" << endl;
+
+  vector<string>::size_type index;
+  for (index = 0; index != feats_.size(); ++index) {
+    ofs << "\t" << g_desc_feat_name[index] << ": \"" << feats_[index] 
+        << "\"" << endl;
+  }
+
+  ofs << "\tpath: " << path_ << endl;
 
   return;
 }

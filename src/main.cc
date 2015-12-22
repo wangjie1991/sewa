@@ -10,6 +10,7 @@
 
 **************************************************************************/
 
+#include <unistd.h>
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
@@ -44,7 +45,7 @@ extern int g_dim_weight[];
 **************************************************************************/
 int ExtractConf(const string &line) {
   /* empty or comment line */
-  if ((0 == line.compare("") || ('#' == line[0])) {
+  if ((0 == line.compare("")) || ('#' == line[0])) {
     return 0;
   }
 
@@ -58,7 +59,7 @@ int ExtractConf(const string &line) {
   /* get key and val */
   string key = line.substr(0, pos-1);
   string val = line.substr(pos+2, line.length()-pos-2);
-  char *c_val = val.c_str();
+  const char *c_val = val.c_str();
 
   if (0 == key.compare("silent_limit")) {
     g_silent_limit = (short)atoi(c_val);
@@ -193,12 +194,13 @@ int GetConf(const string &conf) {
   print the usage message
 **************************************************************************/
 void Usage() {
-  cerr << "Usage: sewa [options] wave_list sewa_hour sewa_list\n" << endl;
-  cerr << "Select sewa_hour transcript WAV files from wave_list and write the selected files to sewa_list file.\n" << endl;
+  cerr << "\nUsage: ./sewa [options] wave_list sewa_hour sewa_list" << endl;
+  cerr << "Select sewa_hour WAV files from wave_list to sewa_list." << endl;
+  cerr << "Example: ./sewa yintianxia.list 100 output.list.\n" << endl;
   cerr << "Options:" << endl;
   cerr << " -c conf       file of parameters to control selection" << endl;
-  cerr << " -d desc_list  list of description files" << endl;
-  cerr << " -l sewa_log   detail information of selection" << endl;
+  cerr << " -d desc_list  file of list of description files" << endl;
+  cerr << " -l sewa_log   file of detail information in selection\n" << endl;
   return;
 }
 
@@ -208,12 +210,11 @@ void Usage() {
 int main(int argc, char* argv[]) {
 
   int opt = 0;
-  char *optstr = "c:d:l:";
   string conf;
   string desc_list;
   string sewa_log;
 
-  while ((opt = getopt(argc, argv, optstr)) != -1) {
+  while ((opt = getopt(argc, argv, "c:d:l:")) != -1) {
     switch(opt) {
       case 'c':
         conf = optarg;
@@ -239,18 +240,18 @@ int main(int argc, char* argv[]) {
   int sewa_hour = atoi(argv[optind + 1]);
   string sewa_list(argv[optind + 2]);
 
-  if (0 != GetConf(conf)) {
+  if (!conf.empty() && (0 != GetConf(conf))) {
     cerr << "main error: get conf params failed." << endl;
     return -1;
   }
 
   Syns syns(wave_list, desc_list, sewa_hour, sewa_list, sewa_log);
   if (0 != syns.SynsProc()) {
-    cerr << "Sewa process failed." << endl;
+    cerr << "main error: sewa process failed." << endl;
     return -1;
   }
 
-  cout << "Sewa process success." << endl;
+  cout << "main msg: sewa process success." << endl;
   return 0;
 }
 

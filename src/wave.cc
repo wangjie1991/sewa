@@ -20,17 +20,16 @@
 
 #include "util.h"
 
+using namespace std;
+
 
 /* feature type name */
-extern const std::string g_wave_feat_name[kWaveFeatMax] = {
+extern const string g_wave_feat_name[kWaveFeatMax] = {
   "wave_second",
   "silent_second",
-  "vocal_second",
   "loud_second",
-  "noise_second",
   "silent_rate",
-  "loud_rate",
-  "noise_rate"
+  "loud_rate"
 };
 
 short g_silent_limit = 100;
@@ -49,7 +48,7 @@ Wave::Wave() : feats_(kWaveFeatMax) {
 /**************************************************************************
   if file is not end with .wav, the parameter path is considered invalid.
 **************************************************************************/
-Wave::Wave(const std::string &path)
+Wave::Wave(const string &path)
     : path_(path), feats_(kWaveFeatMax) {
   memset((void*)&data_, 0, sizeof(data_));
   if (!IsSuffixLegal(path_, g_suffix_wav)){
@@ -64,15 +63,13 @@ Wave::Wave(const std::string &path)
 **************************************************************************/
 int Wave::WaveProc() {
   if (0 != ExtractName(path_, name_)) {
-    std::cerr << "WaveProc error: file " << path_
-              << " ExtractName failed" << std::endl;
+    cerr << "wave error: file " << path_ << " ExtractName failed" << endl;
     return -1;
   }
 
   if (0 != AllocWaveData()) {
     ReleaseWaveData();
-    std::cerr << "WaveProc error: file " << path_
-              << " AllocWaveData failed" << std::endl;
+    cerr << "wave error: file " << path_ << " AllocWaveData failed" << endl;
     return -1;
   }
 
@@ -84,23 +81,27 @@ int Wave::WaveProc() {
 }
 
 /**************************************************************************
-  --------
-  path : /home/xxx/file.wav
-  name : file
-  feat-speaker : A
-  feat-office : 1111
-  ....
+  wave-feat
+    wave_second: XXs
+    silent_second: XXs
+    loud_second: XXs
+    silent_rate: XX%
+    loud_rate: XX%
+    path: /home/xxx/file.wav
 **************************************************************************/
-void Wave::Print() const {
-  std::cout << "--------" << std::endl
-            << "path : " << path_ << std::endl
-            << "name : " << name_ << std::endl;
+void Wave::Print(ofstream &ofs) const {
 
-  std::vector<std::string>::size_type index;
-  for (index = 0; index != feats_.size(); ++index) {
-    std::cout << "feat-" << g_wave_feat_name[index] << " : "
-              << feats_[index] << std::endl;
+  if (!ofs) {
+    return;
   }
+
+  ofs << "wave-feat" << endl
+      << "\t" << g_wave_feat_name[0] << ": " << feats_[0] << "s" << endl
+      << "\t" << g_wave_feat_name[1] << ": " << feats_[1] << "s" << endl
+      << "\t" << g_wave_feat_name[2] << ": " << feats_[2] << "s" << endl
+      << "\t" << g_wave_feat_name[3] << ": " << feats_[3] << "%" << endl
+      << "\t" << g_wave_feat_name[4] << ": " << feats_[4] << "%" << endl
+      << "\tpath: " << path_ << endl;
 
   return;
 }
@@ -112,10 +113,9 @@ void Wave::Print() const {
 **************************************************************************/
 int Wave::AllocWaveData() {
   /* get file stream */
-  std::ifstream stream(path_.c_str(), std::ifstream::binary);
+  ifstream stream(path_.c_str(), ifstream::binary);
   if (!stream) {
-    std::cerr << "AllocWaveData error: can't open file " 
-              << path_ << std::endl;
+    cerr << "wave error: can't open file " << path_ << endl;
     return -1;
   }
 
@@ -125,8 +125,7 @@ int Wave::AllocWaveData() {
   stream.seekg(0, stream.beg);
 
   if (size <= WAVE_HEAD_LEN) {
-    std::cerr << "AllocWaveData error: file "
-              << path_ << " length is error" << std::endl;
+    cerr << "wave error: file " << path_ << " length is error" << endl;
     return -1;
   }
 
@@ -141,8 +140,7 @@ int Wave::AllocWaveData() {
 
   data_.wave_header = (WaveHeader *)(void *)data_.buffer;
   if (data_.wave_header->data_size != data_.size - WAVE_HEAD_LEN) {
-    std::cerr << "AllocWaveData error: file "
-              << path_ << " wav format is error" << std::endl;
+    cerr << "wave error: file " << path_ << " format is error" << endl;
     return -1;
   }
 
@@ -226,7 +224,6 @@ void Wave::ExtractWaveFeat() {
   feats_[kWaveFeatWaveSec] = wave_sec;
   feats_[kWaveFeatSilentSec] = silent_sec;
   feats_[kWaveFeatLoudSec] = loud_sec;
-  feats_[kWaveFeatVocalSec] = wave_sec - silent_sec;
   /* round */
   feats_[kWaveFeatSilentRate] = ((silent_sec * 1000) / wave_sec + 5) / 10;
   feats_[kWaveFeatLoudRate] = ((loud_sec * 1000) / wave_sec + 5) / 10;

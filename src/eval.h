@@ -16,11 +16,14 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
+
+using namespace std;
+
 
 class Wave;
 class Desc;
 class Syns;
-
 
 enum Dimension {
   kDimWave,
@@ -28,7 +31,7 @@ enum Dimension {
   kDimMax
 };
 
-extern const std::string g_dim_name[];
+extern const string g_dim_name[];
 
 /**************************************************************************
   This class provides data and method to evaluate priority
@@ -98,12 +101,13 @@ class Eval {
   Return: none
   Notice: none
 **************************************************************************/
-  void Print() const;
+  void Print(ofstream &ofs) const;
 
 /**************************************************************************
   variable member function
 **************************************************************************/
   const Wave *wave() const { return wave_; }
+  const Desc *desc() const { return desc_; }
   int priority() const { return priority_; }
 
  private:
@@ -204,11 +208,11 @@ class Eval {
   const Syns *syns_;
 
   /* scores transformed from features */
-  std::vector<int> wave_scores_;
-  std::vector<int> desc_scores_;
+  vector<int> wave_scores_;
+  vector<int> desc_scores_;
 
   /* score of different dimention */
-  std::vector<int> dim_scores_;
+  vector<int> dim_scores_;
   int priority_;
 
 };

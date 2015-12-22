@@ -18,8 +18,11 @@
 #include <iostream>
 #include <map>
 #include <algorithm>
+#include <iomanip>
 
 #include "util.h"
+
+using namespace std;
 
 
 /**************************************************************************
@@ -41,14 +44,16 @@ int Syns::SynsProc() {
     return -1;
   }
 
-  if (!desc_file_.empty()) {
-    if (0 != GenDescList()) {
-      cerr << "syns warning: GenDescList failed" << endl;
-    }
+  if (!desc_file_.empty() && (0 != GenDescList())) {
+    cerr << "syns error: GenDescList failed" << endl;
+    return -1;
   }
 
   GenVectors();
-  Select();
+  if (0 != Select()) {
+    cerr << "syns error: Select failed" << endl;
+    return -1;
+  }
 
   return 0;
 }
@@ -132,6 +137,8 @@ void Syns::GenVectors() {
       waves_.push_back(wave);
     }
   }
+  cout << "syns msg: wave vector process finished." << endl;
+
   /* process all desc files */
   for (liter = desc_list_.begin(); liter != desc_list_.end(); ++liter) {
     Desc desc(*liter);
@@ -164,6 +171,7 @@ void Syns::GenVectors() {
       delete eval;
     }
   }
+  cout << "syns msg: eval vector process finished." << endl;
 
   sort(evals_.begin(), evals_.end(), EvalDec);
 
@@ -175,6 +183,16 @@ void Syns::GenVectors() {
   detail information write to sewa_log
 **************************************************************************/
 int Syns::Select() const {
+  /* check params */
+  if (sewa_hour_ <= 0) {
+    cerr << "syns error: sewa hour is illegal." << endl;
+    return -1;
+  }
+  if (sewa_file_.empty()) {
+    cerr << "syns error: sewa list file name is empty" << endl;
+    return -1;
+  }
+
   /* get file stream */
   ofstream f_stream(sewa_file_.c_str()); 
   if (!f_stream) {
@@ -183,38 +201,78 @@ int Syns::Select() const {
   }
 
   /* get log stream */
-  ofstream l_stream(sewa_log_.c_str()); 
-  if (!l_stream) {
-    cerr << "syns error: can't open file " << sewa_log_ << endl;
-    return -1;
+  ofstream l_stream;
+  if (!sewa_log_.empty()) {
+    l_stream.open(sewa_log_.c_str()); 
+    if (!l_stream) {
+      cerr << "syns error: can't open file " << sewa_log_ << endl;
+      return -1;
+    }
   }
 
   /* walk evals_ */
   int select_second = 0;
-  int remain_second = select_hour * 3600;
+  int remain_second = sewa_hour_ * 3600;
+  int last_priority = 0;
+  bool drawline = false;
 
   vector<Eval>::const_iterator iter;
   for (iter = evals_.begin(); iter != evals_.end(); ++iter) {
     const Eval &eval = *iter;
     const Wave *wave = eval.wave();
+    const Desc *desc = eval.desc();
     int second = wave->feats()[kWaveFeatWaveSec];
-    
-    select_second += second;
-    remain_second -= second;
+    int priority = eval.priority();
 
-    if (remain_second < 0) {
-      break;
-    } else {
-      stream << wave->name() << "\t";
-      stream << eval.priority() << "\t";
-      stream << second << "\t";
-      stream << remain_second << endl;
+    if ((last_priority > 0) && (priority == 0)) {
+      drawline = true;
+      last_priority = priority; 
+    }
+    if ((priority > 0) && (remain_second > 0)) {
+      select_second += second;
+      remain_second -= second;
+
+      if (remain_second <= 0) {
+        drawline = true;
+        select_second = sewa_hour_ * 3600;
+        remain_second = 0;
+      }
+
+      f_stream << wave->path() << endl;
+    }
+
+    if (drawline) {
+      if (l_stream) {
+        l_stream << "------------------------------" << endl;
+      }
+      drawline = false;
+    }
+
+    float minute = second / 60.0;
+    float select_hour = select_second / 3600.0;
+    float remain_hour = remain_second / 3600.0;
+
+    if (l_stream) {
+      l_stream << wave->name() << endl
+               << "syns-feat" << endl
+               << "\tpriority: " << setprecision(4) << priority << endl
+               << "\tminutes: " << setprecision(3) << minute << "m" << endl
+               << "\tselect_hour: " << setprecision(4) << select_hour
+               << "h" << endl
+               << "\tremain_hour: " << setprecision(4) << remain_hour
+               << "h" << endl;
+      wave->Print(l_stream);
+      if (desc != NULL) {
+        desc->Print(l_stream);
+      }
+      eval.Print(l_stream);
+      l_stream << endl;
     }
   }
 
   if (remain_second > 0) {
-    cerr << "Select error: selected files is less than "
-              << select_hour << " hours." << endl;
+    cerr << "syns error: select hours is less than " 
+         << sewa_hour_ << endl;
     return -1;
   }
 

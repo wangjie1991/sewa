@@ -15,27 +15,29 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <map>
 
 #include "wave.h"
 #include "desc.h"
 #include "syns.h"
 
+using namespace std;
+
 
 /* dimention name */
-extern const std::string g_dim_name[kDimMax] = {
+extern const string g_dim_name[kDimMax] = {
   "wave",
   "desc"
 };
 
 /* wide rate, narrow value */
-/* 60-300 -> 100-200 -> 10%-60% -> 10-120 */
 int g_wave_feat_min[kWaveFeatMax]
-                   = {60, 10, 50, 0, 0, 10, 0, 0};
+                   = {60, 0, 0, 0, 0};
 int g_wave_feat_max[kWaveFeatMax]
-                   = {300, 120, 300, 20, 30, 60, 10, 20};
+                   = {300, 120, 20, 60, 10};
 
-int g_wave_weight[kWaveFeatMax] = {15, 15, 0, 20, 0, 30, 20, 0};
+int g_wave_weight[kWaveFeatMax] = {15, 15, 20, 30, 20};
 int g_desc_weight[kDescFeatMax] = {100, 0, 0, 0, 0};
 int g_dim_weight[kDimMax] = {50, 50};
 
@@ -67,7 +69,7 @@ Eval::Eval(const Wave *const wave, const Desc *const desc,
 int Eval::EvalProc() {
 
   if (wave_ == NULL) {
-    std::cerr << "EvalProc error: wave_ is NULL" << std::endl;
+    cerr << "eval error: wave_ is NULL" << endl;
   }
   EvalWave();
 
@@ -76,7 +78,7 @@ int Eval::EvalProc() {
   }
 
   priority_ = 0;
-  std::vector<int>::size_type index = 0;
+  vector<int>::size_type index = 0;
   for (index = 0; index < kDimMax; ++index) {
     priority_ += g_dim_weight[index] * dim_scores_[index];
   }
@@ -85,44 +87,49 @@ int Eval::EvalProc() {
 }
 
 /**************************************************************************
-  ---------------------
-  name : file
-  score-wave-wavsec : A
-  score-wave-noisec : B
-  ......
-  score-desc-speaker : A
-  score-desc-office : B
-  ......
-  score-dim-wave : A
-  score-dim-desc : B
-  ......
-  priority : A
+  wave-score
+    wave_second: XX
+    silent_second: XX
+    loud_second: XX
+    silent_rate: XX
+    loud_rate: XX
+  desc-score
+    speaker: XX
+    office: XX
+    platform: XX
+    format: XX
+    business: XX
+  dim-score
+    wave: XX
+    desc: XX
 **************************************************************************/
-void Eval::Print() const {
-  std::cout << "---------------------" << std::endl
-            << "name : " << wave_->name() << std::endl;
+void Eval::Print(ofstream &ofs) const {
+  if (!ofs) {
+    return;
+  }
 
-  std::vector<int>::size_type index = 0;
+  vector<int>::size_type index = 0;
 
   /* print wave_scores_ */
+  ofs << "wave-score" << endl;
   for (index = 0; index != wave_scores_.size(); ++index) {
-    std::cout << "score-wave-" << g_wave_feat_name[index] << " : "
-              << wave_scores_[index] << std::endl;
+    ofs << "\t" << g_wave_feat_name[index] << ": "
+        << wave_scores_[index] << endl;
   }
 
   /* print desc_scores_ */
+  ofs << "desc-score" << endl;
   for (index = 0; index != desc_scores_.size(); ++index) {
-    std::cout << "score-desc-" << g_desc_feat_name[index] << " : "
-              << desc_scores_[index] << std::endl;
+    ofs << "\t" << g_desc_feat_name[index] << ": "
+        << desc_scores_[index] << endl;
   }
 
   /* print dim_scores_ */
+  ofs << "dim-score" << endl;
   for (index = 0; index != dim_scores_.size(); ++index) {
-    std::cout << "score-dim-" << g_dim_name[index] << " : "
-              << dim_scores_[index] << std::endl;
+    ofs << "\t" << g_dim_name[index] << ": "
+        << dim_scores_[index] << endl;
   }
-
-  std::cout << "priority : " << priority_ << std::endl;
 
   return;
 }
@@ -135,24 +142,24 @@ void Eval::EvalWave() {
   /* evaluate feature */
   EvalWaveFeatPositive(kWaveFeatWaveSec);
   EvalWaveFeatNegative(kWaveFeatSilentSec);
-  EvalWaveFeatPositive(kWaveFeatVocalSec);
   EvalWaveFeatNegative(kWaveFeatLoudSec);
-  EvalWaveFeatNegative(kWaveFeatNoiseSec);
   EvalWaveFeatNegative(kWaveFeatSilentRate);
   EvalWaveFeatNegative(kWaveFeatLoudRate);
-  EvalWaveFeatNegative(kWaveFeatNoiseRate);
 
   /* sum score */
   int sum = 0;
   bool discard = false;
-  std::vector<int>::size_type index = 0;
+  vector<int>::size_type index = 0;
 
   for (index = 0; index < kWaveFeatMax; ++index) {
-    if (wave_scores_[index] < 0) {
-      discard = true;
-      break;
+    if (g_wave_weight[index] > 0) {
+      if (wave_scores_[index] < 0) {
+        discard = true;
+        break;
+      } else {
+        sum += g_wave_weight[index] * wave_scores_[index];
+      }
     }
-    sum += g_wave_weight[index] * wave_scores_[index];
   }
 
   if (discard) {
@@ -213,14 +220,17 @@ void Eval::EvalDesc() {
   /* sum score */
   int sum = 0;
   bool discard = false;
-  std::vector<int>::size_type index = 0;
+  vector<int>::size_type index = 0;
 
   for (index = 0; index < kDescFeatMax; ++index) {
-    if (desc_scores_[index] < 0) {
-      discard = true;
-      break;
+    if (g_desc_weight[index] > 0) {
+      if (desc_scores_[index] < 0) {
+        discard = true;
+        break;
+      } else {
+        sum += g_desc_weight[index] * desc_scores_[index];
+      }
     }
-    sum += g_desc_weight[index] * desc_scores_[index];
   }
 
   if (discard) {
@@ -237,10 +247,10 @@ void Eval::EvalDesc() {
   the speaker is reasonable.
 **************************************************************************/
 void Eval::EvalDescFeatSpeaker() {
-  const std::string &speaker = desc_->feats()[kDescFeatSpeaker];
-  const std::map<std::string, int> &rate = syns_->speaker_rate();
+  const string &speaker = desc_->feats()[kDescFeatSpeaker];
+  const map<string, int> &rate = syns_->speaker_rate();
 
-  std::map<std::string, int>::const_iterator iter = rate.find(speaker);
+  map<string, int>::const_iterator iter = rate.find(speaker);
   if (iter != rate.end()) {
     desc_scores_[kDescFeatSpeaker] = iter->second;
   } else {
@@ -254,7 +264,7 @@ void Eval::EvalDescFeatSpeaker() {
   No detail transform method
 **************************************************************************/
 void Eval::EvalDescFeatOffice() {
-  //const std::string &office = wave_->feats()[kDescFeatOffice];
+  //const string &office = wave_->feats()[kDescFeatOffice];
   desc_scores_[kDescFeatOffice] = 0;
   return;
 }
@@ -263,7 +273,7 @@ void Eval::EvalDescFeatOffice() {
   No detail transform method
 **************************************************************************/
 void Eval::EvalDescFeatPlatform() {
-  //const std::string &platform = wave_->feats()[kDescFeatPlatform];
+  //const string &platform = wave_->feats()[kDescFeatPlatform];
   desc_scores_[kDescFeatPlatform] = 0;
   return;
 }
@@ -272,7 +282,7 @@ void Eval::EvalDescFeatPlatform() {
   No detail transform method
 **************************************************************************/
 void Eval::EvalDescFeatFormat() {
-  //const std::string &format = wave_->feats()[kDescFeatFormat];
+  //const string &format = wave_->feats()[kDescFeatFormat];
   desc_scores_[kDescFeatFormat] = 0;
   return;
 }
@@ -281,7 +291,7 @@ void Eval::EvalDescFeatFormat() {
   No detail transform method
 **************************************************************************/
 void Eval::EvalDescFeatBusiness() {
-  //const std::string &business = wave_->feats()[kDescFeatBusiness];
+  //const string &business = wave_->feats()[kDescFeatBusiness];
   desc_scores_[kDescFeatBusiness] = 0;
   return;
 }
