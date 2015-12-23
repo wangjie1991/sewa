@@ -29,10 +29,10 @@ using namespace std;
   syns initial
 **************************************************************************/
 Syns::Syns(const string &wave_file, const string &desc_file,
-           const int sewa_hour, const string &sewa_file, 
-           const string &sewa_log)
-    : wave_file_(wave_file), desc_file_(desc_file), sewa_hour_(sewa_hour),
-      sewa_file_(sewa_file), sewa_log_(sewa_log) { }
+           const string &sewa_file, const string &sewa_log, 
+           const int sewa_hour)
+    : wave_file_(wave_file), desc_file_(desc_file), sewa_file_(sewa_file), 
+      sewa_log_(sewa_log), sewa_hour_(sewa_hour) { }
 
 /**************************************************************************
   desc files can be empty while wave files must be exist.
@@ -243,7 +243,8 @@ int Syns::Select() const {
 
     if (drawline) {
       if (l_stream) {
-        l_stream << "------------------------------" << endl;
+        l_stream << "--------------------------------------------------\n" 
+                 << endl;
       }
       drawline = false;
     }

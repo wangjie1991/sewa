@@ -1,4 +1,5 @@
-VAR = debug
+#VAR = debug
+VAR = release
 
 GXX = g++
 TARGET = sewa

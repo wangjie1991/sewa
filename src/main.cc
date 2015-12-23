@@ -194,9 +194,9 @@ int GetConf(const string &conf) {
   print the usage message
 **************************************************************************/
 void Usage() {
-  cerr << "\nUsage: ./sewa [options] wave_list sewa_hour sewa_list" << endl;
+  cerr << "\nUsage: ./sewa [options] wave_list sewa_list sewa_hour" << endl;
   cerr << "Select sewa_hour WAV files from wave_list to sewa_list." << endl;
-  cerr << "Example: ./sewa yintianxia.list 100 output.list.\n" << endl;
+  cerr << "Example: ./sewa yintianxia.list output.list 100.\n" << endl;
   cerr << "Options:" << endl;
   cerr << " -c conf       file of parameters to control selection" << endl;
   cerr << " -d desc_list  file of list of description files" << endl;
@@ -237,15 +237,15 @@ int main(int argc, char* argv[]) {
   }
 
   string wave_list(argv[optind]);
-  int sewa_hour = atoi(argv[optind + 1]);
-  string sewa_list(argv[optind + 2]);
+  string sewa_list(argv[optind + 1]);
+  int sewa_hour = atoi(argv[optind + 2]);
 
   if (!conf.empty() && (0 != GetConf(conf))) {
     cerr << "main error: get conf params failed." << endl;
     return -1;
   }
 
-  Syns syns(wave_list, desc_list, sewa_hour, sewa_list, sewa_log);
+  Syns syns(wave_list, desc_list, sewa_list, sewa_log, sewa_hour);
   if (0 != syns.SynsProc()) {
     cerr << "main error: sewa process failed." << endl;
     return -1;

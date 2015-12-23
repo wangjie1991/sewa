@@ -46,18 +46,18 @@ class Syns {
   Description: constructor with file name initialization
   Input: const string &wave_file
          const string &desc_file
-         const int    sewa_hour
          const string &sewa_file
          const string &sewa_log
+         const int    sewa_hour
   Output: none
   Return: none
   Notice: constructor initializer for variables
 **************************************************************************/
   explicit Syns(const string &wave_file,
                 const string &desc_file,
-                const int sewa_hour,
                 const string &sewa_file,
-                const string &sewa_log);
+                const string &sewa_log,
+                const int sewa_hour);
 
 /**************************************************************************
   Function: ~Syns
@@ -162,9 +162,9 @@ class Syns {
   string desc_file_;
   vector<string> desc_list_;
 
-  int sewa_hour_;
   string sewa_file_;
   string sewa_log_;
+  int sewa_hour_;
 
   /* wave, desc and eval objects in vector */
   vector<Wave> waves_;

@@ -118,10 +118,12 @@ void Eval::Print(ofstream &ofs) const {
   }
 
   /* print desc_scores_ */
-  ofs << "desc-score" << endl;
-  for (index = 0; index != desc_scores_.size(); ++index) {
-    ofs << "\t" << g_desc_feat_name[index] << ": "
-        << desc_scores_[index] << endl;
+  if (desc_ != NULL) {
+    ofs << "desc-score" << endl;
+    for (index = 0; index != desc_scores_.size(); ++index) {
+      ofs << "\t" << g_desc_feat_name[index] << ": "
+          << desc_scores_[index] << endl;
+    }
   }
 
   /* print dim_scores_ */

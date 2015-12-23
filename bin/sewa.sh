@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # arguments
-wave_dir=""
+wave_dir="wave/"
 desc_dir=""
 sewa_dir="tr/"
-sewa_hour=0
+sewa_hour=2
 
 if [ $# -eq 4 ]
 then
@@ -29,7 +29,8 @@ fi
 
 # debug version output the analysis result and
 # save the list directory.
-debug=0
+#debug=0
+debug=1
 conf="config"
 list_dir="list"
 
@@ -108,16 +109,16 @@ fi
 # run the main program
 if [[ $debug -eq 1 && -s $desc_list ]]
 then
-  ./sewa -c $conf -d $desc_list -l $sewa_log $wave_list $sewa_hour $sewa_list
+  ./sewa -c $conf -d $desc_list -l $sewa_log $wave_list $sewa_list $sewa_hour
 elif [[ $debug -eq 1 && ! -s $desc_list ]]
 then
-  ./sewa -c $conf -l $sewa_log $wave_list $sewa_hour $sewa_list
+  ./sewa -c $conf -l $sewa_log $wave_list $sewa_list $sewa_hour
 elif [[ $debug -eq 0 && -s $desc_list ]]
 then
-  ./sewa -c $conf -d $desc_list $wave_list $sewa_hour $sewa_list
+  ./sewa -c $conf -d $desc_list $wave_list $sewa_list $sewa_hour
 elif [[ $debug -eq 0 && ! -s $desc_list ]]
 then
-  ./sewa -c $conf $wave_list $sewa_hour $sewa_list
+  ./sewa -c $conf $wave_list $sewa_list $sewa_hour
 fi
 
 if [ $? -eq 0 ]
@@ -145,7 +146,7 @@ done < $sewa_list
 echo "Copy wave files success"
 
 # rm temporary files in debug mode
-if [ $debug -eq 1 ]
+if [ $debug -eq 0 ]
 then
   rm -rf $list_dir
 fi
