@@ -4,37 +4,68 @@
 # set to get best result.
 # comments can be add by prefix # at first of the line.
 
-# wave
-# 16bit
+# 在声纹信号中判断静音的阈值，16bit音频中默认值为100。
+# 噪音大的音频中该值可适当调高。
 silent_limit = 100
+
+# 声纹信号中判断一个信号窗静音的比例值。
+# 窗内静音信号数量超过该比例时，该窗设为静音窗。
+# 一般不做调整。
 silent_rate = 0.6
+
+# 声纹信号中判断振幅过大的阈值，16bit中默认值为26000。
+# 振幅过高如果较多，表明该信号质量不好。
+# 一般不做调整。
 loud_thres = 26000
+
+# 声纹信号中判断一个信号窗振幅过大的阈值。
+# 窗内振幅过大的信号个数超过该阈值时，表明该窗振幅过大。
+# 一般不做调整。
 loud_num = 8
 
-# eval
+
+# 音频时长的最小值和最大值，单位分钟。超过时长范围的音频不会被筛选。
 wave_minute_min = 1
 wave_minute_max = 5
+
+# 静音时长的最小值和最大值，单位分钟。超过时长范围的音频不会被筛选。
 silent_minute_min = 0
 silent_minute_max = 2
+
+# 振幅过大音频段时长的最小值和最大值，单位分钟。
+# 超过时长范围的音频不会被筛选。
 loud_minute_min = 0
 loud_minute_max = 0.5
+
+# 静音占音频总时长的比值，超过比值范围的音频不会被筛选。
 silent_rate_min = 0
 silent_rate_max = 0.6
+
+# 振幅过大音频段占音频总时长的比值，超过比值范围的音频不会被筛选。
 loud_rate_min = 0
 loud_rate_max = 0.2
 
+
+# 音频的五个特征在筛选评分时所占的权重。
+# 如果筛选时某个特性比较重要，可以适当调高权重。
+# 如果不想使用某个特征来筛选，可以将权重设为0。
+# 所有特征的权重和必须等于1。
 weight_wave_minute = 0.15
 weight_silent_minute = 0.15
 weight_loud_minute = 0.2
 weight_silent_rate = 0.3
 weight_loud_rate = 0.2
 
+# 随录信息的五个特征在筛选评分时所占的权重。
+# 比如根据说话人选择音频时，可以将说话人权重设为1，其他设为0.
 weight_speaker = 1
 weight_office = 0
 weight_platform = 0
 weight_format = 0
 weight_business = 0
 
+# 音频和随录信息在筛选时的权重，一般都设为0.5。
+# 没有随录信息时，音频权重可以为1。
 weight_wave = 1
 weight_desc = 0
 
