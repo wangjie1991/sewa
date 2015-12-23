@@ -241,17 +241,17 @@ int main(int argc, char* argv[]) {
   int sewa_hour = atoi(argv[optind + 2]);
 
   if (!conf.empty() && (0 != GetConf(conf))) {
-    cerr << "main error: get conf params failed." << endl;
+    cerr << "sewa error: get conf params failed." << endl;
     return -1;
   }
 
   Syns syns(wave_list, desc_list, sewa_list, sewa_log, sewa_hour);
   if (0 != syns.SynsProc()) {
-    cerr << "main error: sewa process failed." << endl;
+    cerr << "sewa error: sewa process failed." << endl;
     return -1;
   }
 
-  cout << "main msg: sewa process success." << endl;
+  cout << "sewa msg: sewa process success." << endl;
   return 0;
 }
 

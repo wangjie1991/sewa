@@ -137,7 +137,6 @@ void Syns::GenVectors() {
       waves_.push_back(wave);
     }
   }
-  cout << "syns msg: wave vector process finished." << endl;
 
   /* process all desc files */
   for (liter = desc_list_.begin(); liter != desc_list_.end(); ++liter) {
@@ -171,7 +170,6 @@ void Syns::GenVectors() {
       delete eval;
     }
   }
-  cout << "syns msg: eval vector process finished." << endl;
 
   sort(evals_.begin(), evals_.end(), EvalDec);
 
