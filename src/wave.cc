@@ -28,6 +28,8 @@ extern const string g_wave_feat_name[kWaveFeatMax] = {
   "wave_second",
   "silent_second",
   "loud_second",
+  "silent_continue",
+  "loud_continue",
   "silent_rate",
   "loud_rate"
 };
@@ -95,13 +97,17 @@ void Wave::Print(ofstream &ofs) const {
     return;
   }
 
-  ofs << "wave-feat" << endl
-      << "\t" << g_wave_feat_name[0] << ": " << feats_[0] << "s" << endl
-      << "\t" << g_wave_feat_name[1] << ": " << feats_[1] << "s" << endl
-      << "\t" << g_wave_feat_name[2] << ": " << feats_[2] << "s" << endl
-      << "\t" << g_wave_feat_name[3] << ": " << feats_[3] << "%" << endl
-      << "\t" << g_wave_feat_name[4] << ": " << feats_[4] << "%" << endl
-      << "\tpath: " << path_ << endl;
+  ofs << "wave-feat" << endl;
+  vector<string>::size_type index;
+  for (index = 0; index != feats_.size(); ++index) {
+    ofs << "\t" << g_wave_feat_name[index] << ": " << feats_[index];
+    if (index <= 4) {
+      ofs << "s" << endl;
+    } else {
+      ofs << "%" << endl;
+    }
+  }
+  ofs << "\tpath: " << path_ << endl;
 
   return;
 }
@@ -174,6 +180,12 @@ void Wave::ExtractWaveFeat() {
   unsigned int wave_sec = data_size / byte_per_sec + 1;
   unsigned int silent_sec = 0;
   unsigned int loud_sec = 0;
+  unsigned int cont_silent_sec = 0;
+  unsigned int cont_loud_sec = 0;
+  unsigned int max_cont_silent_sec = 0;
+  unsigned int max_cont_loud_sec = 0;
+  bool cont_silent = false;
+  bool cont_loud = false;
 
   /* extract feature in every second */
   char *wave_buf = data_.buffer + WAVE_HEAD_LEN;
@@ -212,18 +224,43 @@ void Wave::ExtractWaveFeat() {
 
     /* judge the frame according to statistical variables */
     if (silent_num > (g_silent_rate * sample_num)) {
+      if (cont_silent) {
+        cont_silent_sec++;
+      } else {
+        cont_silent_sec = 1;
+      }
       silent_sec++;
-    }
-    if ((int)loud_num > g_loud_num) {
-      loud_sec++;
+      cont_silent = true;
+    } else {
+      if (cont_silent_sec > max_cont_silent_sec) {
+        max_cont_silent_sec = cont_silent_sec;
+      }
+      cont_silent = false;
     }
     
+    if ((int)loud_num > g_loud_num) {
+      if (cont_loud) {
+        cont_loud_sec++;
+      } else {
+        cont_loud_sec = 1;
+      }
+      loud_sec++;
+      cont_loud = true;
+    } else {
+      if (cont_loud_sec > max_cont_loud_sec) {
+        max_cont_loud_sec = cont_loud_sec;
+      }
+      cont_loud = false;
+    }
+
     wave_buf += byte_per_sec;
   }
 
   feats_[kWaveFeatWaveSec] = wave_sec;
   feats_[kWaveFeatSilentSec] = silent_sec;
   feats_[kWaveFeatLoudSec] = loud_sec;
+  feats_[kWaveFeatSilentCont] = max_cont_silent_sec;
+  feats_[kWaveFeatLoudCont] = max_cont_loud_sec;
   /* round */
   feats_[kWaveFeatSilentRate] = ((silent_sec * 1000) / wave_sec + 5) / 10;
   feats_[kWaveFeatLoudRate] = ((loud_sec * 1000) / wave_sec + 5) / 10;

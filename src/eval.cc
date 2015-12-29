@@ -33,11 +33,11 @@ extern const string g_dim_name[kDimMax] = {
 
 /* wide rate, narrow value */
 int g_wave_feat_min[kWaveFeatMax]
-                   = {60, 0, 0, 0, 0};
+                   = {60, 0, 0, 0, 0, 0, 0};
 int g_wave_feat_max[kWaveFeatMax]
-                   = {300, 120, 20, 60, 10};
+                   = {300, 0, 0, 30, 10, 60, 10};
 
-int g_wave_weight[kWaveFeatMax] = {15, 15, 20, 30, 20};
+int g_wave_weight[kWaveFeatMax] = {15, 0, 0, 15, 20, 30, 20};
 int g_desc_weight[kDescFeatMax] = {100, 0, 0, 0, 0};
 int g_dim_weight[kDimMax] = {50, 50};
 
@@ -113,8 +113,10 @@ void Eval::Print(ofstream &ofs) const {
   /* print wave_scores_ */
   ofs << "wave-score" << endl;
   for (index = 0; index != wave_scores_.size(); ++index) {
-    ofs << "\t" << g_wave_feat_name[index] << ": "
-        << wave_scores_[index] << endl;
+    if (g_wave_weight[index] != 0) {
+      ofs << "\t" << g_wave_feat_name[index] << ": "
+          << wave_scores_[index] << endl;
+    }
   }
 
   /* print desc_scores_ */
@@ -143,8 +145,8 @@ void Eval::EvalWave() {
 
   /* evaluate feature */
   EvalWaveFeatPositive(kWaveFeatWaveSec);
-  EvalWaveFeatNegative(kWaveFeatSilentSec);
-  EvalWaveFeatNegative(kWaveFeatLoudSec);
+  EvalWaveFeatNegative(kWaveFeatSilentCont);
+  EvalWaveFeatNegative(kWaveFeatLoudCont);
   EvalWaveFeatNegative(kWaveFeatSilentRate);
   EvalWaveFeatNegative(kWaveFeatLoudRate);
 

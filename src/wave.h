@@ -26,6 +26,8 @@ enum WaveFeat {
   kWaveFeatWaveSec,
   kWaveFeatSilentSec,
   kWaveFeatLoudSec,
+  kWaveFeatSilentCont,   //max continue silent seconds
+  kWaveFeatLoudCont,     //max continue loud seconds
   kWaveFeatSilentRate,
   kWaveFeatLoudRate,
   kWaveFeatMax

@@ -80,17 +80,17 @@ int ExtractConf(const string &line) {
   else if (0 == key.compare("wave_minute_max")) {
     g_wave_feat_max[kWaveFeatWaveSec] = (int)(atof(c_val)*60);
   }
-  else if (0 == key.compare("silent_minute_min")) {
-    g_wave_feat_min[kWaveFeatSilentSec] = (int)(atof(c_val)*60);
+  else if (0 == key.compare("silent_continue_min")) {
+    g_wave_feat_min[kWaveFeatSilentCont] = (int)(atof(c_val)*60);
   }
-  else if (0 == key.compare("silent_minute_max")) {
-    g_wave_feat_max[kWaveFeatSilentSec] = (int)(atof(c_val)*60);
+  else if (0 == key.compare("silent_continue_max")) {
+    g_wave_feat_max[kWaveFeatSilentCont] = (int)(atof(c_val)*60);
   }
-  else if (0 == key.compare("loud_minute_min")) {
-    g_wave_feat_min[kWaveFeatLoudSec] = (int)(atof(c_val)*60);
+  else if (0 == key.compare("loud_continue_min")) {
+    g_wave_feat_min[kWaveFeatLoudCont] = (int)(atof(c_val)*60);
   }
-  else if (0 == key.compare("loud_minute_max")) {
-    g_wave_feat_max[kWaveFeatLoudSec] = (int)(atof(c_val)*60);
+  else if (0 == key.compare("loud_continue_max")) {
+    g_wave_feat_max[kWaveFeatLoudCont] = (int)(atof(c_val)*60);
   }
   else if (0 == key.compare("silent_rate_min")) {
     g_wave_feat_min[kWaveFeatSilentRate] = (int)(atof(c_val)*100);
@@ -108,11 +108,11 @@ int ExtractConf(const string &line) {
   else if (0 == key.compare("weight_wave_minute")) {
     g_wave_weight[kWaveFeatWaveSec] = (int)(atof(c_val)*100);
   }
-  else if (0 == key.compare("weight_silent_minute")) {
-    g_wave_weight[kWaveFeatSilentSec] = (int)(atof(c_val)*100);
+  else if (0 == key.compare("weight_silent_continue")) {
+    g_wave_weight[kWaveFeatSilentCont] = (int)(atof(c_val)*100);
   }
-  else if (0 == key.compare("weight_loud_minute")) {
-    g_wave_weight[kWaveFeatLoudSec] = (int)(atof(c_val)*100);
+  else if (0 == key.compare("weight_loud_continue")) {
+    g_wave_weight[kWaveFeatLoudCont] = (int)(atof(c_val)*100);
   }
   else if (0 == key.compare("weight_silent_rate")) {
     g_wave_weight[kWaveFeatSilentRate] = (int)(atof(c_val)*100);

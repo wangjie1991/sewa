@@ -28,14 +28,14 @@ loud_num = 8
 wave_minute_min = 1
 wave_minute_max = 5
 
-# 静音时长的最小值和最大值，单位分钟。超过时长范围的音频不会被筛选。
-silent_minute_min = 0
-silent_minute_max = 2
+# 最大连续静音时长的最小值和最大值，单位分钟。超过时长范围的音频不会被筛选。
+silent_continue_min = 0
+silent_continue_max = 0.5
 
-# 振幅过大音频段时长的最小值和最大值，单位分钟。
+# 最大连续振幅过大音频段时长的最小值和最大值，单位分钟。
 # 超过时长范围的音频不会被筛选。
-loud_minute_min = 0
-loud_minute_max = 0.5
+loud_continue_min = 0
+loud_continue_max = 0.5
 
 # 静音占音频总时长的比值，超过比值范围的音频不会被筛选。
 silent_rate_min = 0
@@ -51,8 +51,8 @@ loud_rate_max = 0.2
 # 如果不想使用某个特征来筛选，可以将权重设为0。
 # 所有特征的权重和必须等于1。
 weight_wave_minute = 0.15
-weight_silent_minute = 0.15
-weight_loud_minute = 0.2
+weight_silent_continue = 0.15
+weight_loud_continue = 0.2
 weight_silent_rate = 0.3
 weight_loud_rate = 0.2
 
