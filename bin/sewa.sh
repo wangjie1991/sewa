@@ -4,7 +4,7 @@
 wave_dir="wave/"
 desc_dir=""
 sewa_dir="tr/"
-sewa_hour=2
+sewa_hour=1
 
 if [ $# -eq 4 ]
 then
@@ -130,6 +130,8 @@ else
 fi
 
 # copy files in sewa.list to sewa directory
+echo "" > cp.sh
+chmod u+x cp.sh
 while read line
 do
   path=${line#$wave_dir}
@@ -141,7 +143,7 @@ do
     mkdir -p $dir
   fi
 
-  cp $line $path
+  echo "cp $line $path" >> cp.sh
 done < $sewa_list
 echo "Copy wave files success"
 
